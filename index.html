@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultedTCGx — Premium Pokémon Card Collector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-dim: #8B6914;
+    --black: #000000;
+    --near-black: #080808;
+    --surface: #0D0D0D;
+    --surface2: #141414;
+    --surface3: #1A1A1A;
+    --text: #E8E0CC;
+    --text-dim: #8A7D5A;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
+    transition: background 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(0,0,0,0.97);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 14px 48px;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+  }
+  .nav-logo img {
+    height: 44px;
+    width: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(201,168,76,0.4);
+  }
+  .nav-logo-text {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold) !important;
+    padding: 10px 24px;
+    transition: all 0.2s !important;
+  }
+  .nav-cta:hover {
+    background: var(--gold) !important;
+    color: var(--black) !important;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%),
+      linear-gradient(180deg, #000 0%, #050505 50%, #000 100%);
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 24px;
+    max-width: 900px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 8px 20px;
+    margin-bottom: 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    animation: fadeInDown 0.8s ease both;
+  }
+  .hero-badge::before, .hero-badge::after {
+    content: '';
+    height: 1px;
+    width: 30px;
+    background: var(--gold-dim);
+  }
+  .hero-logo-wrap {
+    margin-bottom: 32px;
+    animation: fadeInDown 0.9s ease 0.1s both;
+  }
+  .hero-logo-wrap img {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,168,76,0.5);
+    box-shadow: 0 0 60px rgba(201,168,76,0.2), 0 0 120px rgba(201,168,76,0.08);
+    object-fit: cover;
+  }
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: clamp(42px, 7vw, 84px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    margin-bottom: 12px;
+    animation: fadeInUp 1s ease 0.2s both;
+  }
+  .hero-title span {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dim) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 52px;
+    animation: fadeInUp 1s ease 0.3s both;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease 0.4s both;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    color: var(--black);
+    border: none;
+    padding: 16px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.4);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 16px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-outline:hover {
+    background: rgba(201,168,76,0.08);
+    border-color: var(--gold);
+  }
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 1s ease 1s both;
+  }
+  .hero-scroll span {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold-dim), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* TRUST BAR */
+  .trust-bar {
+    border-top: 1px solid rgba(201,168,76,0.15);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    background: var(--surface);
+    padding: 20px 48px;
+    overflow: hidden;
+  }
+  .trust-track {
+    display: flex;
+    gap: 64px;
+    align-items: center;
+    animation: marquee 25s linear infinite;
+    white-space: nowrap;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .trust-icon {
+    font-size: 18px;
+  }
+  .trust-value {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--gold);
+  }
+  .trust-label {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .trust-sep {
+    color: var(--gold-dim);
+    opacity: 0.4;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  /* SECTION COMMON */
+  section {
+    padding: 100px 48px;
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .section-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .section-eyebrow::before, .section-eyebrow::after {
+    content: '';
+    height: 1px;
+    width: 40px;
+    background: linear-gradient(to right, transparent, var(--gold-dim));
+  }
+  .section-eyebrow::after {
+    background: linear-gradient(to left, transparent, var(--gold-dim));
+  }
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 48px);
+    color: var(--white);
+    line-height: 1.1;
+  }
+  .section-title span {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* CATALOGUE */
+  .catalogue {
+    background: var(--near-black);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .card-item {
+    position: relative;
+    background: var(--surface);
+    overflow: hidden;
+    cursor: pointer;
+    group: true;
+  }
+  .card-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
+  .card-item:hover::before { opacity: 1; }
+  .card-img-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+    filter: brightness(0.92);
+  }
+  .card-item:hover .card-img-wrap img {
+    transform: scale(1.04);
+    filter: brightness(1);
+  }
+  .card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+  }
+  .card-grade {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    color: var(--black);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 6px 12px;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+  .card-info {
+    padding: 24px;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    position: relative;
+    z-index: 2;
+  }
+  .card-year {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .card-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--white);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .card-set {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-price {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card-enquire {
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .card-enquire:hover {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+  }
+
+  /* ABOUT / STREAM */
+  .about {
+    background: var(--black);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-images {
+    position: relative;
+    height: 500px;
+  }
+  .about-img-main {
+    position: absolute;
+    top: 0; left: 0;
+    width: 75%;
+    height: 85%;
+    object-fit: cover;
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+  .about-img-secondary {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 55%;
+    height: 55%;
+    object-fit: cover;
+    border: 2px solid var(--gold-dim);
+    box-shadow: -8px -8px 0 var(--black);
+  }
+  .about-text .section-eyebrow {
+    justify-content: flex-start;
+  }
+  .about-text .section-eyebrow::before { display: none; }
+  .about-text .section-title {
+    text-align: left;
+    margin-bottom: 24px;
+  }
+  .about-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+  .stat-val {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* LIVE SECTION */
+  .live-section {
+    background: var(--surface);
+    border-top: 1px solid rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .live-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .live-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .live-video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 600px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid rgba(201,168,76,0.2);
+    cursor: pointer;
+  }
+  .live-video-wrap video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .vid-controls {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 10;
+    padding: 40px 20px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .live-video-wrap:hover .vid-controls,
+  .live-video-wrap.paused .vid-controls { opacity: 1; }
+  .vid-scrubber-wrap {
+    position: relative;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .vid-scrubber-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    border-radius: 2px;
+    width: 0%;
+    pointer-events: none;
+  }
+  .vid-scrubber-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(201,168,76,0.8);
+    left: 0%;
+  }
+  .vid-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .vid-left, .vid-right { display: flex; align-items: center; gap: 12px; }
+  .vid-btn {
+    background: none; border: none;
+    color: var(--white); cursor: pointer;
+    font-size: 16px; padding: 4px;
+    display: flex; align-items: center;
+    transition: color 0.15s, transform 0.15s; line-height: 1;
+  }
+  .vid-btn:hover { color: var(--gold); transform: scale(1.15); }
+  .vid-time {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,0.6);
+    letter-spacing: 0.08em; min-width: 80px;
+  }
+  .vid-vol-wrap { display: flex; align-items: center; gap: 8px; }
+  .vid-vol-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 64px; height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px; outline: none; cursor: pointer;
+    accent-color: var(--gold);
+  }
+  .vid-vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--gold-light); cursor: pointer;
+  }
+  .vid-center-play {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 9;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .live-video-wrap.paused .vid-center-play { opacity: 1; }
+  .vid-center-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: var(--black);
+    box-shadow: 0 0 40px rgba(201,168,76,0.5);
+  }
+  .live-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .live-play:hover { background: rgba(0,0,0,0.1); }
+  .play-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--black);
+    box-shadow: 0 0 40px rgba(201,168,76,0.5);
+    transition: transform 0.2s;
+  }
+  .live-play:hover .play-btn { transform: scale(1.1); }
+  .live-text .section-eyebrow {
+    justify-content: flex-start;
+  }
+  .live-text .section-eyebrow::before { display: none; }
+  .live-text .section-title {
+    text-align: left;
+    margin-bottom: 24px;
+  }
+  .live-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+  .live-platforms {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .platform-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 10px 18px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .platform-badge:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* REVIEWS */
+  .reviews {
+    background: var(--near-black);
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .review-card {
+    background: var(--surface);
+    padding: 36px;
+    border-top: 2px solid transparent;
+    transition: border-color 0.3s;
+    position: relative;
+  }
+  .review-card:hover {
+    border-top-color: var(--gold-dim);
+  }
+  .review-stars {
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+  .review-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+  .review-author {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+  }
+  .review-date {
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    margin-top: 4px;
+  }
+
+  /* PARTNERS */
+  .partners {
+    background: var(--black);
+    border-top: 1px solid rgba(201,168,76,0.1);
+  }
+  .partners-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .partner-slot {
+    background: var(--surface);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(201,168,76,0.05);
+    transition: border-color 0.3s;
+    cursor: default;
+  }
+  .partner-slot:hover {
+    border-color: rgba(201,168,76,0.2);
+  }
+  .partner-icon {
+    font-size: 28px;
+    opacity: 0.2;
+  }
+  .partner-text {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    opacity: 0.4;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ENQUIRY MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    padding: 20px 0;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--surface);
+    border: 1px solid rgba(201,168,76,0.25);
+    max-width: 520px;
+    width: 90%;
+    padding: 48px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--gold); }
+  .modal-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .modal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .modal-price {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 32px;
+  }
+  .modal-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-field label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .form-field input, .form-field textarea {
+    background: var(--surface2);
+    border: 1px solid rgba(201,168,76,0.15);
+    color: var(--text);
+    padding: 14px 16px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+  .form-field input:focus, .form-field textarea:focus {
+    border-color: var(--gold-dim);
+  }
+  .form-submit {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    border: none;
+    color: var(--black);
+    padding: 16px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+  .form-submit:hover { opacity: 0.85; }
+  .modal-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.6;
+    text-align: center;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    padding: 60px 48px 40px;
+  }
+  .footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+  .footer-brand img {
+    height: 56px;
+    width: 56px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.3);
+    object-fit: cover;
+    margin-bottom: 16px;
+  }
+  .footer-brand-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .footer-brand-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+  }
+  .footer-col h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 14px;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-socials {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .social-link {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .social-link:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 32px;
+    border-top: 1px solid rgba(201,168,76,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.4;
+    letter-spacing: 0.1em;
+  }
+  .footer-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* REVEAL ON SCROLL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .social-icon-link {
+    display: inline-flex;
+    transition: opacity 0.2s, transform 0.2s;
+    text-decoration: none;
+  }
+  .social-icon-link:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+  }
+
+  /* GALLERY STRIP */
+  .gallery-strip-wrap {
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+  }
+  .gallery-strip-wrap:active { cursor: grabbing; }
+  .gallery-strip {
+    display: flex;
+    gap: 4px;
+    width: max-content;
+    will-change: transform;
+  }
+  .gallery-slide {
+    height: 520px;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .gallery-slide img {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.3s, transform 0.4s;
+    filter: brightness(0.88);
+    pointer-events: none;
+  }
+  .gallery-slide:hover img {
+    filter: brightness(1);
+    transform: scale(1.02);
+  }
+
+  /* PAYMENT MODAL EXTRAS */
+  .pay-method-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid rgba(201,168,76,0.12);
+    color: var(--text-dim); padding: 20px 12px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.12em;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .pay-method-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.06); }
+  .back-btn {
+    background: none; border: none; color: var(--text-dim);
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.15em;
+    cursor: pointer; margin-bottom: 20px; padding: 0;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--gold); }
+  .apple-pay-btn {
+    flex: 1; background: #000; border: 1px solid #333;
+    color: white; padding: 12px; display: flex; align-items: center;
+    justify-content: center; gap: 8px; cursor: pointer;
+    font-family: -apple-system, sans-serif; font-size: 15px; font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .apple-pay-btn:hover { opacity: 0.85; }
+  .google-pay-btn {
+    flex: 1; background: #fff; border: 1px solid #ddd;
+    color: #000; padding: 12px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer;
+    font-family: 'Google Sans', sans-serif; font-size: 15px; font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .google-pay-btn:hover { opacity: 0.85; }
+  .pay-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0; color: var(--text-dim);
+    font-size: 12px; letter-spacing: 0.15em;
+  }
+  .pay-divider::before, .pay-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(201,168,76,0.15);
+  }
+  .bank-detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(201,168,76,0.08);
+    font-size: 14px; color: var(--text-dim);
+  }
+  .bank-detail-row strong { color: var(--text); letter-spacing: 0.05em; }
+  .crypto-token-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--surface2); border: 1px solid rgba(201,168,76,0.12);
+    color: var(--text-dim); padding: 16px 8px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .crypto-token-btn:hover, .crypto-token-btn.active {
+    border-color: var(--gold); color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+  .token-ticker {
+    font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: 0.2em; opacity: 0.6;
+  }
+  .crypto-amount-display {
+    background: var(--surface2); border: 1px solid rgba(201,168,76,0.2);
+    padding: 20px; text-align: center; margin-bottom: 20px;
+  }
+  .metamask-btn {
+    width: 100%; background: linear-gradient(135deg, #F6851B, #E4761B);
+    border: none; color: white; padding: 14px;
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.15em;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 10px; transition: opacity 0.2s;
+  }
+  .metamask-btn:hover { opacity: 0.9; }
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    section { padding: 80px 24px; }
+    .about-grid, .live-grid { grid-template-columns: 1fr; gap: 40px; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .about-images { height: 300px; }
+    .hero-title { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="images/img01.jpg" alt="VaultedTCGx">
+    <span class="nav-logo-text">VaultedTCGx</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#catalogue">The Vault</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#live">Live Shows</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#contact" class="nav-cta">Enquire</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Premium Pokémon TCG Collector</div>
+    <div class="hero-logo-wrap">
+      <img src="images/img01.jpg" alt="VaultedTCGx Logo">
+    </div>
+    <h1 class="hero-title">Vaulted<br><span>TCGx</span></h1>
+    <p class="hero-sub">Where Rare Cards Find Their Rightful Home</p>
+    <div class="hero-actions">
+      <a href="#catalogue" class="btn-primary">Browse The Vault</a>
+      <a href="#live" class="btn-outline">Watch Live</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-track">
+    <!-- duplicated for seamless loop -->
+    <div class="trust-item"><span class="trust-icon">⭐</span><span class="trust-value">5.0</span><span class="trust-label">Rating · 676 Reviews</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">📦</span><span class="trust-value">5.5K+</span><span class="trust-label">Items Sold</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🏆</span><span class="trust-value">Premier</span><span class="trust-label">Whatnot Shop</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🚚</span><span class="trust-value">&lt;1 Day</span><span class="trust-label">Avg. Dispatch</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🔐</span><span class="trust-value">PSA</span><span class="trust-label">Graded Slabs</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">👥</span><span class="trust-value">15.1K</span><span class="trust-label">Followers</span></div>
+    <span class="trust-sep">◆</span>
+    <!-- repeat -->
+    <div class="trust-item"><span class="trust-icon">⭐</span><span class="trust-value">5.0</span><span class="trust-label">Rating · 676 Reviews</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">📦</span><span class="trust-value">5.5K+</span><span class="trust-label">Items Sold</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🏆</span><span class="trust-value">Premier</span><span class="trust-label">Whatnot Shop</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🚚</span><span class="trust-value">&lt;1 Day</span><span class="trust-label">Avg. Dispatch</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">🔐</span><span class="trust-value">PSA</span><span class="trust-label">Graded Slabs</span></div>
+    <span class="trust-sep">◆</span>
+    <div class="trust-item"><span class="trust-icon">👥</span><span class="trust-value">15.1K</span><span class="trust-label">Followers</span></div>
+    <span class="trust-sep">◆</span>
+  </div>
+</div>
+
+<!-- CATALOGUE -->
+<section class="catalogue" id="catalogue">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">The Vault</div>
+    <h2 class="section-title">Premium <span>Singles</span></h2>
+  </div>
+  <div class="card-grid">
+
+    <div class="card-item reveal" onclick="openModal('Charizard Holo — Delta Species', '2006 · EX Crystal Guardians · PSA 10', '£950')">
+      <div class="card-img-wrap">
+        <img src="images/img02.jpg" alt="Charizard Holo">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 10</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2006 · EX Crystal Guardians</div>
+        <div class="card-name">Charizard Holo</div>
+        <div class="card-set">Delta Species · #4/100</div>
+        <div class="card-footer">
+          <div class="card-price">£950</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-item reveal" onclick="openModal('Umbreon Holo — 1st Edition', '2002 · Japanese Split Earth · PSA 10', '£650')">
+      <div class="card-img-wrap">
+        <img src="images/img03.jpg" alt="Umbreon Holo">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 10</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2002 · Japanese Split Earth</div>
+        <div class="card-name">Umbreon Holo</div>
+        <div class="card-set">1st Edition · #072</div>
+        <div class="card-footer">
+          <div class="card-price">£650</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-item reveal" onclick="openModal('Shining Mewtwo — 1st Edition', '2002 · Neo Destiny · PSA 10', '£1,800')">
+      <div class="card-img-wrap">
+        <img src="images/img04.jpg" alt="Shining Mewtwo">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 10</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2002 · Neo Destiny</div>
+        <div class="card-name">Shining Mewtwo</div>
+        <div class="card-set">1st Edition · #109/105</div>
+        <div class="card-footer">
+          <div class="card-price">£1,800</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-item reveal" onclick="openModal('Mega Charizard X ex — SIR', '2025 · Phantasmal Flames · PSA 10', '£2,200')">
+      <div class="card-img-wrap">
+        <img src="images/img05.jpg" alt="Mega Charizard X ex">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 10</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2025 · Prismatic Evolutions</div>
+        <div class="card-name">Mega Charizard X ex</div>
+        <div class="card-set">Special Illustration Rare · #125</div>
+        <div class="card-footer">
+          <div class="card-price">£2,200</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-item reveal" onclick="openModal('Sabrina's Gengar Holo — 1st Edition', '2000 · Gym Heroes · PSA 9', 'POA')">
+      <div class="card-img-wrap">
+        <img src="images/img06.jpg" alt="Sabrina's Gengar">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 9</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2000 · Gym Heroes</div>
+        <div class="card-name">Sabrina's Gengar Holo</div>
+        <div class="card-set">1st Edition · #14</div>
+        <div class="card-footer">
+          <div class="card-price">£2,800</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-item reveal" onclick="openModal('VSTAR Universe Trio — FA Set', '2022 · Japanese VSTAR Universe · PSA 10', '£480')">
+      <div class="card-img-wrap">
+        <img src="images/img07.jpg" alt="VSTAR Universe">
+        <div class="card-img-overlay"></div>
+        <div class="card-grade">PSA 10</div>
+      </div>
+      <div class="card-info">
+        <div class="card-year">2022 · Japanese VSTAR Universe</div>
+        <div class="card-name">FA Trio — Entei / Raikou / Suicune</div>
+        <div class="card-set">Full Art Set · #213 · #215 · #218</div>
+        <div class="card-footer">
+          <div class="card-price">£480</div>
+          <button class="card-enquire">Buy Now</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+
+<!-- GALLERY -->
+<section style="padding: 80px 0; background: var(--black); overflow: hidden;">
+  <div style="max-width:1400px; margin:0 auto; padding: 0 48px;">
+    <div class="section-header reveal" style="margin-bottom:48px;">
+      <div class="section-eyebrow">Behind The Vault</div>
+      <h2 class="section-title">Inside The <span>Collection</span></h2>
+    </div>
+  </div>
+  <div class="gallery-strip-wrap">
+    <div class="gallery-strip" id="galleryStrip">
+      <div class="gallery-slide">
+        <img src="images/img08.jpg" alt="Vault setup">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img09.jpg" alt="Gold Charizard">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img10.jpg" alt="Cards display">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img11.jpg" alt="The Vault collection">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img12.jpg" alt="Pack pulls">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img13.jpg" alt="Cards in hand">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img14.jpg" alt="Fan of cards">
+      </div>
+      <!-- duplicate for seamless loop -->
+      <div class="gallery-slide">
+        <img src="images/img08.jpg" alt="Vault setup">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img09.jpg" alt="Gold Charizard">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img10.jpg" alt="Cards display">
+      </div>
+      <div class="gallery-slide">
+        <img src="images/img11.jpg" alt="The Vault collection">
+      </div>
+    </div>
+  </div>
+  <!-- drag hint -->
+  <div style="text-align:center; margin-top:24px;">
+    <span style="font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.3em; color:var(--text-dim); opacity:0.5; text-transform:uppercase;">← Drag to explore →</span>
+  </div>
+</section>
+
+<section style="padding: 100px 48px; background: var(--black);" id="about">
+  <div class="about-grid" style="max-width:1400px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
+    <div class="about-images reveal" style="position:relative; height:520px;">
+      <img src="images/img15.jpg" alt="The Vault Setup"
+        style="position:absolute; top:0; left:0; width:72%; height:80%; object-fit:cover; border:1px solid rgba(201,168,76,0.2);">
+      <img src="images/img16.jpg" alt="Stream Setup"
+        style="position:absolute; bottom:0; right:0; width:52%; height:52%; object-fit:cover; border:2px solid var(--gold-dim); box-shadow:-8px -8px 0 var(--black);">
+    </div>
+    <div class="reveal" style="animation-delay:0.15s;">
+      <div class="section-eyebrow" style="justify-content:flex-start;">
+        <span>The Story</span>
+      </div>
+      <h2 class="section-title" style="text-align:left; margin-bottom:24px;">Direct From<br><span>The Source</span></h2>
+      <p style="font-size:16px; line-height:1.8; color:var(--text-dim); margin-bottom:20px;">
+        VaultedTCGx is built on one principle: every collector deserves access to the rarest cards, authenticated and presented at the highest standard. Led by Adam, the Vault has handled thousands of transactions with a perfect 5.0 rating.
+      </p>
+      <p style="font-size:16px; line-height:1.8; color:var(--text-dim); margin-bottom:40px;">
+        From PSA 10 vintage slabs to sealed case-fresh product, every item in the Vault is verified, described honestly, and dispatched fast. Buying direct means no platform markups — just the collection you want, straight to your door.
+      </p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding-top:32px; border-top:1px solid rgba(201,168,76,0.15);">
+        <div>
+          <div class="stat-val">5.0</div>
+          <div class="stat-lbl">Perfect Rating</div>
+        </div>
+        <div>
+          <div class="stat-val">5.5K</div>
+          <div class="stat-lbl">Items Sold</div>
+        </div>
+        <div>
+          <div class="stat-val">15K+</div>
+          <div class="stat-lbl">Followers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE -->
+<section class="live-section" id="live">
+  <div class="live-inner">
+    <div class="live-grid">
+      <div class="reveal">
+        <div class="live-video-wrap paused" id="videoWrap" onclick="handleWrapClick(event)">
+          <video id="streamVideo" src="stream_clip.mp4" loop muted playsinline preload="auto"></video>
+          <!-- centre play indicator -->
+          <div class="vid-center-play"><div class="vid-center-icon">▶</div></div>
+          <!-- controls -->
+          <div class="vid-controls" onclick="event.stopPropagation()">
+            <div class="vid-scrubber-wrap" id="scrubberWrap">
+              <div class="vid-scrubber-fill" id="scrubberFill"></div>
+              <div class="vid-scrubber-thumb" id="scrubberThumb"></div>
+            </div>
+            <div class="vid-bottom-row">
+              <div class="vid-left">
+                <button class="vid-btn" id="playBtn" title="Play / Pause">▶</button>
+                <span class="vid-time" id="vidTime">0:00 / 0:00</span>
+              </div>
+              <div class="vid-right">
+                <div class="vid-vol-wrap">
+                  <button class="vid-btn" id="muteBtn" title="Mute / Unmute">🔇</button>
+                  <input type="range" class="vid-vol-slider" id="volSlider" min="0" max="1" step="0.05" value="0">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal" style="animation-delay:0.15s;">
+        <div class="section-eyebrow" style="justify-content:flex-start;"><span>Live Shows</span></div>
+        <h2 class="section-title" style="text-align:left; margin-bottom:24px;">Watch The<br><span>Vault Open</span></h2>
+        <p class="live-body">
+          Adam goes live regularly on Whatnot and TikTok — pack breaks, singles reveals, instant wins, and community events. Every show is a chance to chase the card you've been hunting, live and in real time.
+        </p>
+        <p style="font-size:14px; color:var(--text-dim); margin-bottom:32px; line-height:1.7;">
+          Bookmark upcoming shows, grab slots in break events, or simply watch the collection grow. The community is free to join — and the pulls are very real.
+        </p>
+        <div class="live-platforms">
+          <a href="https://www.whatnot.com/user/vaultedtcgx" target="_blank" class="platform-badge">Whatnot</a>
+          <a href="https://www.instagram.com/vaultedtcgx" target="_blank" class="platform-badge">Instagram</a>
+          <a href="#" class="platform-badge">TikTok</a>
+          <a href="https://discord.gg/dRwXASTBX" target="_blank" class="platform-badge">Discord</a>
+          <a href="#" class="platform-badge">YouTube</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews" id="reviews">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">Verified Buyers</div>
+    <h2 class="section-title">676 Reviews · <span>5.0 Stars</span></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Absolutely incredible service. Card arrived exactly as described, perfectly packaged, dispatched same day. Adam really knows his stuff and the communication was top tier."</p>
+      <div class="review-author">@collector_uk</div>
+      <div class="review-date">Verified Whatnot Purchase</div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.1s;">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Best TCG seller on the platform. I've bought from dozens of shops and VaultedTCGx is in another league. The PSA grading knowledge alone is worth following for."</p>
+      <div class="review-author">@psahunter</div>
+      <div class="review-date">Verified Whatnot Purchase</div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.2s;">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Bought a vintage slab — arrived in perfect condition, better than expected. Been watching the live shows ever since. The breaks are honestly the most entertaining on Whatnot."</p>
+      <div class="review-author">@vintagetcg_fan</div>
+      <div class="review-date">Verified Whatnot Purchase</div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="partners" id="partners">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">Network</div>
+    <h2 class="section-title">Featured <span>Partners</span></h2>
+  </div>
+  <div class="partners-grid">
+    <div class="partner-slot reveal">
+      <div class="partner-icon">👑</div>
+      <div class="partner-text">Coming Soon</div>
+    </div>
+    <div class="partner-slot reveal" style="transition-delay:0.08s;">
+      <div class="partner-icon">👑</div>
+      <div class="partner-text">Coming Soon</div>
+    </div>
+    <div class="partner-slot reveal" style="transition-delay:0.16s;">
+      <div class="partner-icon">👑</div>
+      <div class="partner-text">Coming Soon</div>
+    </div>
+    <div class="partner-slot reveal" style="transition-delay:0.24s;">
+      <div class="partner-icon">👑</div>
+      <div class="partner-text">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal" style="max-width:580px;">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-eyebrow">Vault Purchase</div>
+    <h3 class="modal-title" id="modal-card-name"></h3>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;" id="modal-card-detail"></div>
+    <div class="modal-price" id="modal-card-price"></div>
+
+    <!-- STEP 1: Choose payment method -->
+    <div id="step-method">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;letter-spacing:0.05em;">Select your payment method</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;">
+        <button class="pay-method-btn" onclick="selectMethod('card')">
+          <span style="font-size:22px;">💳</span>
+          <span>Card / Apple Pay</span>
+        </button>
+        <button class="pay-method-btn" onclick="selectMethod('bank')">
+          <span style="font-size:22px;">🏦</span>
+          <span>Bank Transfer</span>
+        </button>
+        <button class="pay-method-btn" onclick="selectMethod('crypto')">
+          <span style="font-size:22px;">⛓️</span>
+          <span>Pay with Crypto</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2a: Card payment -->
+    <div id="step-card" style="display:none;">
+      <button class="back-btn" onclick="backToMethod()">← Back</button>
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="apple-pay-btn" onclick="simulatePay('Apple Pay')">
+            <svg viewBox="0 0 50 20" style="height:18px;fill:white;"><path d="M9.3 3.4c-.5.6-1.3 1.1-2.1 1-.1-.8.3-1.7.8-2.2.5-.6 1.4-1.1 2.1-1.1.1.9-.2 1.7-.8 2.3zm.8 1.3c-1.2-.1-2.2.7-2.7.7-.5 0-1.3-.6-2.2-.6C3.9 5 2.7 5.8 2 7.1c-1.3 2.3-.3 5.7.9 7.5.6.9 1.4 1.9 2.3 1.8.9 0 1.3-.6 2.4-.6s1.4.6 2.4.6c1 0 1.7-1 2.3-1.9.7-1.1 1-2.1 1-2.2 0 0-2-.8-2-2.9 0-1.8 1.5-2.7 1.5-2.7-.8-1.2-2.1-1.3-2.5-1.3z"/></svg>
+            Apple Pay
+          </div>
+          <div class="google-pay-btn" onclick="simulatePay('Google Pay')">G Pay</div>
+        </div>
+        <div class="pay-divider"><span>or pay by card</span></div>
+        <div class="modal-form">
+          <div class="form-field">
+            <label>Card Number</label>
+            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-field">
+              <label>Expiry</label>
+              <input type="text" placeholder="MM / YY" maxlength="7">
+            </div>
+            <div class="form-field">
+              <label>CVC</label>
+              <input type="text" placeholder="123" maxlength="3">
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Name on Card</label>
+            <input type="text" placeholder="Full name">
+          </div>
+          <button class="form-submit" onclick="simulatePay('Card')">Pay <span id="card-pay-amount"></span></button>
+        </div>
+      </div>
+      <p class="modal-note">🔒 Secured by Stripe. Your card details are never stored.</p>
+    </div>
+
+    <!-- STEP 2b: Bank transfer -->
+    <div id="step-bank" style="display:none;">
+      <button class="back-btn" onclick="backToMethod()">← Back</button>
+      <p style="font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;">Transfer the exact amount below to secure your card. Adam will confirm receipt and dispatch within 24 hours.</p>
+      <div class="bank-detail-row"><span>Account Name</span><strong>VaultedTCGx Ltd</strong></div>
+      <div class="bank-detail-row"><span>Sort Code</span><strong>XX-XX-XX</strong></div>
+      <div class="bank-detail-row"><span>Account Number</span><strong>XXXXXXXX</strong></div>
+      <div class="bank-detail-row" style="border-top:1px solid rgba(201,168,76,0.2);margin-top:12px;padding-top:12px;">
+        <span>Reference</span><strong id="bank-ref">VAULT-XXXXX</strong>
+      </div>
+      <div class="bank-detail-row">
+        <span>Amount</span><strong id="bank-amount" style="color:var(--gold);font-size:18px;"></strong>
+      </div>
+      <div class="form-field" style="margin-top:20px;">
+        <label>Your Email (for confirmation)</label>
+        <input type="email" placeholder="your@email.com">
+      </div>
+      <button class="form-submit" style="margin-top:16px;" onclick="simulatePay('Bank Transfer')">I've Sent the Transfer</button>
+      <p class="modal-note">Once received, Adam will email confirmation and your card will be reserved.</p>
+    </div>
+
+    <!-- STEP 2c: Crypto -->
+    <div id="step-crypto" style="display:none;">
+      <button class="back-btn" onclick="backToMethod()">← Back</button>
+      <p style="font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;">Connect your Web3 wallet or choose a token to pay with. Price is locked for 15 minutes once connected.</p>
+      
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">
+        <button class="crypto-token-btn active" onclick="selectToken(this,'ETH')">
+          <span style="font-size:24px;">⟠</span>
+          <span style="font-size:13px;font-weight:600;">Ethereum</span>
+          <span class="token-ticker">ETH</span>
+        </button>
+        <button class="crypto-token-btn" onclick="selectToken(this,'BTC')">
+          <span style="font-size:24px;">₿</span>
+          <span style="font-size:13px;font-weight:600;">Bitcoin</span>
+          <span class="token-ticker">BTC</span>
+        </button>
+        <button class="crypto-token-btn" onclick="selectToken(this,'USDC')">
+          <span style="font-size:22px;">◎</span>
+          <span style="font-size:13px;font-weight:600;">USD Coin</span>
+          <span class="token-ticker">USDC</span>
+        </button>
+      </div>
+
+      <div class="crypto-amount-display">
+        <div style="font-size:12px;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">Amount Due</div>
+        <div id="crypto-amount" style="font-family:'Cinzel',serif;font-size:28px;color:var(--gold);"></div>
+        <div id="crypto-gbp-equiv" style="font-size:12px;color:var(--text-dim);margin-top:4px;"></div>
+      </div>
+
+      <div id="wallet-btns"></div>
+      Crypto prices update in real time. Rate locked for 15 min after wallet connection.</p>
+    </div>
+
+    <!-- STEP 3: Confirmation -->
+    <div id="step-confirm" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <h3 style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold);margin-bottom:12px;">You're All Set</h3>
+      <p style="font-size:14px;color:var(--text-dim);line-height:1.7;" id="confirm-msg"></p>
+      <button class="form-submit" style="margin-top:24px;max-width:200px;margin-left:auto;margin-right:auto;" onclick="closeModal()">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="images/img01.jpg" alt="VaultedTCGx">
+      <div class="footer-brand-name">VaultedTCGx</div>
+      <div class="footer-brand-sub">Premium Pokémon TCG collector specialising in PSA-graded vintage and modern rare cards. Based in the UK. Shipping worldwide.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <a href="#catalogue">The Vault</a>
+      <a href="#about">About</a>
+      <a href="#live">Live Shows</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#partners">Partners</a>
+    </div>
+    <div class="footer-col">
+      <h4>Find Us</h4>
+      <div class="footer-socials" style="gap:16px;">
+        <a href="#" target="_blank" class="social-icon-link" title="TikTok">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="url(#tt_grad)"/>
+            <path d="M22 13.5a4.5 4.5 0 004.5 4.5v-2a2.5 2.5 0 01-2.5-2.5h-2zm0 0v9a4 4 0 11-4-4v-2a6 6 0 106 6v-9h-2z" fill="#000"/>
+            <defs><linearGradient id="tt_grad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient></defs>
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/vaultedtcgx" target="_blank" class="social-icon-link" title="Instagram">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="url(#ig_grad)"/>
+            <rect x="10" y="10" width="16" height="16" rx="5" stroke="#000" stroke-width="2" fill="none"/>
+            <circle cx="18" cy="18" r="4" stroke="#000" stroke-width="2" fill="none"/>
+            <circle cx="23" cy="13" r="1" fill="#000"/>
+            <defs><linearGradient id="ig_grad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient></defs>
+          </svg>
+        </a>
+        <a href="#" target="_blank" class="social-icon-link" title="YouTube">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="url(#yt_grad)"/>
+            <rect x="8" y="12" width="20" height="12" rx="3" fill="#000"/>
+            <polygon points="15,15 23,18 15,21" fill="url(#yt_grad2)"/>
+            <defs>
+              <linearGradient id="yt_grad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient>
+              <linearGradient id="yt_grad2" x1="15" y1="15" x2="23" y2="21"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient>
+            </defs>
+          </svg>
+        </a>
+        <a href="https://www.whatnot.com/user/vaultedtcgx" target="_blank" class="social-icon-link" title="Whatnot">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="url(#wn_grad)"/>
+            <text x="18" y="23" text-anchor="middle" font-family="serif" font-weight="bold" font-size="16" fill="#000">w</text>
+            <defs><linearGradient id="wn_grad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient></defs>
+          </svg>
+        </a>
+        <a href="https://discord.gg/dRwXASTBX" target="_blank" class="social-icon-link" title="Discord">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="url(#dc_grad)"/>
+            <path d="M14 13c-1.5.5-3 2-3 5s1 4.5 2.5 5.5c.5-1 .5-2 .5-2s-1-.5-1-2 .5-2.5 2-3l1-1-2-2.5zm8 0l-1 2.5-2 3c1.5.5 2 2 2 3s0 1-.5 2c1.5-1 2.5-3.5 2.5-5.5s-1.5-4.5-3-5zm-7 5a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" fill="#000"/>
+            <defs><linearGradient id="dc_grad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#C9A84C"/><stop offset="1" stop-color="#F0D080"/></linearGradient></defs>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 VaultedTCGx · All rights reserved</span>
+    <span class="footer-tag">@VaultedTCGx</span>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll effect
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ── PAYMENT MODAL ─────────────────────────────────────────────
+  let currentPrice = '';
+  let currentToken = 'ETH';
+  let liveRates = { ETH: 1710, BTC: 57879, USDC: 0.79 }; // GBP per coin - updated live on modal open
+  let ratesLoaded = false;
+
+  async function fetchLiveRates() {
+    try {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,usd-coin&vs_currencies=gbp');
+      const data = await res.json();
+      liveRates.ETH = data.ethereum.gbp;
+      liveRates.BTC = data.bitcoin.gbp;
+      liveRates.USDC = data['usd-coin'].gbp;
+      ratesLoaded = true;
+    } catch(e) {
+      // silently fall back to defaults if fetch fails
+    }
+  }
+
+  function openModal(name, detail, price) {
+    document.getElementById('modal-card-name').textContent = name;
+    document.getElementById('modal-card-detail').textContent = detail;
+    document.getElementById('modal-card-price').textContent = price;
+    document.getElementById('card-pay-amount').textContent = price;
+    document.getElementById('bank-amount').textContent = price;
+    document.getElementById('bank-ref').textContent = 'VAULT-' + Math.floor(10000 + Math.random()*90000);
+    currentPrice = price;
+    showStep('method');
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Fetch live rates then update display
+    fetchLiveRates().then(() => updateCryptoAmount());
+    updateCryptoAmount(); // show immediately with cached rates
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+    walletConnected = false;
+    walletAddress = '';
+  }
+  function closeModalOutside(e) { if (e.target.id === 'modal') closeModal(); }
+
+  function showStep(step) {
+    ['method','card','bank','crypto','confirm'].forEach(s => {
+      document.getElementById('step-' + s).style.display = s === step ? 'block' : 'none';
+    });
+  }
+
+  function selectMethod(method) { showStep(method); if (method === 'crypto') renderWalletButtons(); }
+  function backToMethod() { showStep('method'); }
+
+  function selectToken(btn, token) {
+    document.querySelectorAll('.crypto-token-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentToken = token;
+    updateCryptoAmount();
+  }
+
+  function updateCryptoAmount() {
+    const gbpNum = parseFloat((currentPrice || '£0').replace(/[£,]/g, ''));
+    if (!gbpNum) return;
+    const gbpPerCoin = liveRates[currentToken];
+    const amount = (gbpNum / gbpPerCoin);
+    const decimals = currentToken === 'USDC' ? 2 : currentToken === 'BTC' ? 6 : 4;
+    const symbols = { ETH: 'ETH', BTC: 'BTC', USDC: 'USDC' };
+    document.getElementById('crypto-amount').textContent = amount.toFixed(decimals) + ' ' + symbols[currentToken];
+    document.getElementById('crypto-gbp-equiv').textContent = '≈ ' + currentPrice + ' GBP · Live rate: £' + Math.round(gbpPerCoin).toLocaleString() + ' per ' + currentToken;
+  }
+
+  let walletConnected = false;
+  let walletAddress = '';
+
+  function isMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  function renderWalletButtons() {
+    const container = document.getElementById('wallet-btns');
+    if (!container) return;
+
+    if (walletConnected) {
+      // Wallet is actually connected - show pay button
+      container.innerHTML = `
+        <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);padding:14px;text-align:center;margin-bottom:16px;">
+          <div style="font-size:11px;letter-spacing:0.2em;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;">WALLET CONNECTED</div>
+          <div style="font-size:12px;color:var(--text-dim);">${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}</div>
+        </div>
+        <button class="form-submit" onclick="simulatePay('Crypto (' + currentToken + ')')">
+          Confirm Payment · <span id="crypto-pay-label"></span>
+        </button>`;
+      // Update label
+      updateCryptoAmount();
+    } else if (isMobile()) {
+      container.innerHTML = `
+        <a href="https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}"
+           class="metamask-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:10px;">
+          <span style="font-size:18px;">🦊</span> Open in MetaMask App
+        </a>
+        <p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:12px;opacity:0.6;">
+          Opens the MetaMask browser to connect your wallet
+        </p>
+        <button onclick="showWalletConnectInfo()" style="width:100%;background:transparent;border:1px solid rgba(201,168,76,0.2);color:var(--text-dim);padding:12px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;cursor:pointer;margin-top:8px;">
+          ← Change Payment Method
+        </button>`;
+    } else {
+      container.innerHTML = `
+        <button class="metamask-btn" onclick="connectWalletDesktop()">
+          <span style="font-size:18px;">🦊</span> Connect MetaMask
+        </button>
+        <p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:12px;opacity:0.6;">
+          Or connect any Web3 wallet via WalletConnect
+        </p>
+        <button onclick="showWalletConnectInfo()" style="width:100%;background:transparent;border:1px solid rgba(201,168,76,0.2);color:var(--text-dim);padding:12px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;cursor:pointer;margin-top:8px;">
+          ← Change Payment Method
+        </button>`;
+    }
+  }
+
+  function showWalletConnectInfo() {
+    backToMethod();
+  }
+
+  function connectWalletDesktop() {
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then(accounts => {
+          walletConnected = true;
+          walletAddress = accounts[0];
+          renderWalletButtons();
+        })
+        .catch(() => alert('Wallet connection cancelled.'));
+    } else {
+      alert('MetaMask not detected. Please install the MetaMask extension or use WalletConnect.');
+    }
+  }
+
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(\d{4})/g, '$1 ').trim();
+  }
+
+  function simulatePay(method) {
+    const msgs = {
+      'Apple Pay': 'Your Apple Pay payment is being processed. Adam will confirm your order and dispatch within 24 hours.',
+      'Google Pay': 'Your Google Pay payment is being processed. Adam will confirm your order and dispatch within 24 hours.',
+      'Card': 'Your card payment is being processed securely via Stripe. You\'ll receive a confirmation email shortly.',
+      'Bank Transfer': 'Thank you — Adam will confirm receipt of your transfer and reserve your card immediately. Expect an email within a few hours.',
+    };
+    const msg = msgs[method] || 'Your ' + method + ' payment has been initiated. Adam will be in touch to confirm your order and arrange dispatch.';
+    document.getElementById('confirm-msg').textContent = msg;
+    showStep('confirm');
+  }
+
+  // Keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+
+  // ── GALLERY INFINITE SCROLL ───────────────────────────────────
+  (function() {
+    const strip = document.getElementById('galleryStrip');
+    const wrap = strip.parentElement;
+    let pos = 0;
+    let speed = 0.6; // px per frame
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartPos = 0;
+    let raf;
+
+    // Wait for images to load so we know real width
+    function getHalfWidth() {
+      // strip contains 2 sets — half = one full set
+      return strip.scrollWidth / 2;
+    }
+
+    function tick() {
+      if (!isDragging) {
+        pos += speed;
+        // Reset seamlessly when we've scrolled one full set
+        if (pos >= getHalfWidth()) {
+          pos = 0;
+        }
+      }
+      strip.style.transform = `translateX(${-pos}px)`;
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+
+    // Mouse drag
+    wrap.addEventListener('mousedown', e => {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartPos = pos;
+      wrap.style.cursor = 'grabbing';
+    });
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      wrap.style.cursor = 'grab';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const delta = dragStartX - e.clientX;
+      pos = dragStartPos + delta;
+      // Keep in bounds
+      const half = getHalfWidth();
+      if (pos < 0) pos += half;
+      if (pos >= half) pos -= half;
+    });
+
+    // Touch drag
+    wrap.addEventListener('touchstart', e => {
+      isDragging = true;
+      dragStartX = e.touches[0].clientX;
+      dragStartPos = pos;
+    }, { passive: true });
+    document.addEventListener('touchend', () => { isDragging = false; });
+    document.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const delta = dragStartX - e.touches[0].clientX;
+      pos = dragStartPos + delta;
+      const half = getHalfWidth();
+      if (pos < 0) pos += half;
+      if (pos >= half) pos -= half;
+    }, { passive: true });
+
+    // Pause on hover
+    wrap.addEventListener('mouseenter', () => { speed = 0; });
+    wrap.addEventListener('mouseleave', () => { if (!isDragging) speed = 0.6; });
+  })();
+
+  // ── VIDEO PLAYER ──────────────────────────────────────────────
+  const vid        = document.getElementById('streamVideo');
+  const wrap       = document.getElementById('videoWrap');
+  const playBtn    = document.getElementById('playBtn');
+  const muteBtn    = document.getElementById('muteBtn');
+  const volSlider  = document.getElementById('volSlider');
+  const scrubWrap  = document.getElementById('scrubberWrap');
+  const scrubFill  = document.getElementById('scrubberFill');
+  const scrubThumb = document.getElementById('scrubberThumb');
+  const vidTime    = document.getElementById('vidTime');
+
+  // Start muted (browser requires it for autoplay), volume slider at 0
+  vid.muted = true;
+  vid.volume = 0;
+  volSlider.value = 0;
+  muteBtn.textContent = '🔇';
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return m + ':' + sec;
+  }
+
+  function setPlaying(state) {
+    if (state) {
+      vid.play().catch(() => {});
+      wrap.classList.remove('paused');
+      playBtn.textContent = '⏸';
+    } else {
+      vid.pause();
+      wrap.classList.add('paused');
+      playBtn.textContent = '▶';
+    }
+  }
+
+  // Click wrap = toggle (but not on controls)
+  function handleWrapClick(e) {
+    if (e.target.closest('.vid-controls')) return;
+    setPlaying(vid.paused);
+  }
+
+  playBtn.addEventListener('click', () => setPlaying(vid.paused));
+
+  // Mute button - toggles mute; if unmuting set volume to slider value (min 0.5 if slider still at 0)
+  muteBtn.addEventListener('click', () => {
+    if (vid.muted || vid.volume === 0) {
+      const v = parseFloat(volSlider.value) > 0 ? parseFloat(volSlider.value) : 0.7;
+      vid.volume = v;
+      vid.muted = false;
+      volSlider.value = v;
+      muteBtn.textContent = '🔊';
+    } else {
+      vid.muted = true;
+      vid.volume = 0;
+      volSlider.value = 0;
+      muteBtn.textContent = '🔇';
+    }
+  });
+
+  // Volume slider
+  volSlider.addEventListener('input', () => {
+    const v = parseFloat(volSlider.value);
+    vid.volume = v;
+    vid.muted = v === 0;
+    muteBtn.textContent = v === 0 ? '🔇' : v < 0.5 ? '🔉' : '🔊';
+  });
+
+  // Time update → scrubber + timestamp
+  vid.addEventListener('timeupdate', () => {
+    if (!vid.duration) return;
+    const pct = (vid.currentTime / vid.duration) * 100;
+    scrubFill.style.width = pct + '%';
+    scrubThumb.style.left = pct + '%';
+    vidTime.textContent = fmt(vid.currentTime) + ' / ' + fmt(vid.duration);
+  });
+
+  // Scrubber click / drag
+  let scrubbing = false;
+  function seek(e) {
+    const rect = scrubWrap.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    vid.currentTime = pct * vid.duration;
+  }
+  scrubWrap.addEventListener('mousedown', e => { scrubbing = true; seek(e); });
+  document.addEventListener('mousemove', e => { if (scrubbing) seek(e); });
+  document.addEventListener('mouseup', () => { scrubbing = false; });
+  scrubWrap.addEventListener('touchstart', e => { scrubbing = true; seek(e.touches[0]); }, {passive:true});
+  document.addEventListener('touchmove', e => { if (scrubbing) seek(e.touches[0]); }, {passive:true});
+  document.addEventListener('touchend', () => { scrubbing = false; });
+
+  // ── SCROLL-BASED AUTOPLAY / PAUSE ─────────────────────────────
+  const vidObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setPlaying(true);
+      } else {
+        setPlaying(false);
+      }
+    });
+  }, { threshold: 0.4 });
+  vidObserver.observe(wrap);
+</script>
+</body>
+</html>
